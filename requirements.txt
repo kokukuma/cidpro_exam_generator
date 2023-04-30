@@ -1,0 +1,7 @@
+openai
+chromadb
+langchain
+unstructured
+libmagic
+tiktoken
+pdfminer
