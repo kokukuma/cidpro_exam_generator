@@ -12,18 +12,18 @@ args = parser.parse_args()
 
 def main():
     # vector store
-    persist_directory = 'db'
+    topic = ""
     if args.stdin:
         vectorstore = read_from_std()
     elif args.url:
         vectorstore = read_from_url(args.url)
     else:
+        persist_directory = 'db'
         vectorstore = read_from_source_dict(get_source_files(), persist_directory)
+        topic = input("Topic/Category: ")
 
     qa = get_qa(vectorstore)
-    print(vectorstore._collection.count())
 
-    topic = input("Topic: ")
     # while True:
     for i in range(3):
         # 問題提示

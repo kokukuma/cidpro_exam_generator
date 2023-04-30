@@ -12,7 +12,9 @@ from langchain.chains.llm import LLMChain
 question_prompt = """
 Please create one multiple-choice question related to the specified question and context.
 
-Make sure there is only one correct answer. Please don't provide obviously incorrect options. Don't reveal it.
+Make sure there is only one correct answer. Please don't provide obviously incorrect options.
+
+Don't reveal the answer.
 
 Feel free to create a question that asks for the best solution in a hypothetical organization's situation.
 
