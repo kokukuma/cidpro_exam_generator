@@ -69,7 +69,7 @@ def main():
         if query.lower() == "q":
             break
 
-        result = qa({"question": query, "chat_history": chat_history})
+        result = qa({"question": query, "chat_history": chat_history}, model="gpt-3.5-turbo")
         chat_history.append(("user", query))
         chat_history.append(("assistant", result["answer"]))
 

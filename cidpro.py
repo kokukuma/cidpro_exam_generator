@@ -133,6 +133,7 @@ def create_question_with_search(target, vectorstore, show_page_content=False):
 
     text = f"{result['question']}\n\n"
     if show_page_content:
+        text += f"{s.metadata['source']}\n"
         text += "---------- page contents\n"
         for s in result['source']:
             text += f"{s.page_content}\n\n"
@@ -156,7 +157,7 @@ def create_answer(question, vectorstore):
     return text
 
 
-def get_qa(vectorstore):
+def get_qa(vectorstore, model=os.getenv("GPT_MODEL")):
     openai.api_key = os.getenv("OPENAI_API_KEY")
     llm = ChatOpenAI(temperature=0.5, model_name=os.getenv("GPT_MODEL"))
 
