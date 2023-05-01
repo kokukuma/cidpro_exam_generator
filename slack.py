@@ -160,6 +160,14 @@ def _chat_history(replies):
             chat_history.append(("user", rep.get("text")))
     return chat_history
 
+# @app.event("message")
+# def handle_message(event, logger):
+#     # Reminder: <@U0554E73FCH|cidpro> bok
+#     text = event["text"]
+#     channel = event["channel"]
+#     print(event)
+
+
 # アプリを起動します
 if __name__ == "__main__":
     SocketModeHandler(app, os.environ["SLACK_APP_TOKEN"]).start()

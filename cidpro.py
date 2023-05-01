@@ -114,7 +114,7 @@ def get_source_files():
     return files
 
 
-def create_question_with_search(target, vectorstore):
+def create_question_with_search(target, vectorstore, show_page_content=False):
     openai.api_key = os.getenv("OPENAI_API_KEY")
     llm = ChatOpenAI(temperature=1.0, model_name=os.getenv("GPT_MODEL"))
     eqg = ExamQuestionGenerator.from_llm(llm, vectorstore, chain_type="stuff")
@@ -132,8 +132,15 @@ def create_question_with_search(target, vectorstore):
         result = eqg.keyword(target)
 
     text = f"{result['question']}\n\n"
-    for s in set([s.metadata['source'] for s in result['source']]):
-        text += f"{s}\n"
+    if show_page_content:
+        text += "---------- page contents\n"
+        for s in result['source']:
+            text += f"{s.page_content}\n\n"
+        text += "----------\n"
+    else:
+        for s in set([s.metadata['source'] for s in result['source']]):
+            text += f"{s}\n"
+
     return text
 
 def create_answer(question, vectorstore):

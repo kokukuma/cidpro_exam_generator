@@ -1,4 +1,5 @@
 import os
+import sys
 
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.document_loaders import UnstructuredURLLoader, UnstructuredPDFLoader
@@ -7,21 +8,27 @@ from langchain.text_splitter import CharacterTextSplitter
 
 from lib.stdin_loader import STDInLoader
 
-def read_from_std():
+def read_from_std(chunk_size=1000, chunk_overlap=500):
     print("Input text, Ctrl+D to finish")
     text = sys.stdin.read()
-    loader = STDInLoader(text)
-    pages = loader.load_and_split()
-    if len(pages) < 4:
-        pages = pages * 4
-    return Chroma.from_documents(pages, embedding=OpenAIEmbeddings())
 
-def read_from_url(url):
-    loader = UnstructuredURLLoader(urls=[url])
-    pages = loader.load_and_split()
-    if len(pages) < 4:
-        pages = pages * 4
-    return Chroma.from_documents(pages, embedding=OpenAIEmbeddings())
+    documents = STDInLoader(text).load()
+    # text_splitter = CharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap, separator="\n")
+    text_splitter = CharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap, separator=".")
+    documents = text_splitter.split_documents(documents)
+    if len(documents) < 4:
+        documents = documents * 4
+    return Chroma.from_documents(documents, embedding=OpenAIEmbeddings())
+
+def read_from_url(url, chunk_size=1000, chunk_overlap=500):
+    print(chunk_size, chunk_overlap)
+    documents = UnstructuredURLLoader(urls=[url]).load()
+    # text_splitter = CharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap, separator="\n")
+    text_splitter = CharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap, separator=".")
+    documents = text_splitter.split_documents(documents)
+    if len(documents) < 4:
+        documents = documents * 4
+    return Chroma.from_documents(documents, embedding=OpenAIEmbeddings())
 
 def read_from_source_dict(files, persist_directory):
     vectorstore = None
@@ -36,6 +43,8 @@ def read_from_source_dict(files, persist_directory):
         nonexisting_files = [f for f in files if f not in existing_source]
         if len(nonexisting_files) == 0:
             return vectorstore
+
+    # TODO: delete the source from vectorstore if if it is not in the list.
 
     print(nonexisting_files)
 
