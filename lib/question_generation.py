@@ -112,7 +112,8 @@ class ExamQuestionGenerator():
     def source(self, sources):
         source = random.choice(sources)
         docs = self.vectorstore.similarity_search(".", k=self.vectorstore._collection.count(), filter={"source":source})
-        srcdoc = [random.choice(docs), random.choice(docs), random.choice(docs)]
+        # srcdoc = [random.choice(docs), random.choice(docs), random.choice(docs)]
+        srcdoc = [random.choice(docs)]
         question = self.question_chain.run(input_documents=srcdoc, question="")
         return {
             "question": question,

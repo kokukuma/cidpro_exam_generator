@@ -55,7 +55,8 @@ def read_from_source_dict(files, persist_directory):
     documents.extend(_read_local_pdf(nonexisting_files))
 
     # split docuemnts
-    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0, separator="\n")
+    # text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=0, separator="\n")
+    text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=500, separator=".")
     documents = text_splitter.split_documents(documents)
 
     if len(documents) > 0:
