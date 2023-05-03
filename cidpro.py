@@ -133,9 +133,9 @@ def create_question_with_search(target, vectorstore, show_page_content=False):
 
     text = f"{result['question']}\n\n"
     if show_page_content:
-        text += f"{s.metadata['source']}\n"
         text += "---------- page contents\n"
         for s in result['source']:
+            text += f"{s.metadata['source']}\n"
             text += f"{s.page_content}\n\n"
         text += "----------\n"
     else:
