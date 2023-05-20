@@ -9,25 +9,56 @@ from langchain.chains.combine_documents.base import BaseCombineDocumentsChain
 from langchain.chains.llm import LLMChain
 
 
+# Feel free to create a question that asks for the best solution in a hypothetical organization's situation.
+#
+# Please don't provide obviously incorrect options.
+#
+# Question: (Situation example: Company A has decided to replace its authentication and authorization system as it scales up, which laws should they be concerned about?)
+# Choose the correct answer from the options below:
+# 1. (Option 1)
+# 2. (Option 2)
+# 3. (Option 3)
+# 4. (Option 4)
+#
+# Question: (Specific topic example: Authentication) Choose the correct answer from the options below:
+# 1. (Option 1)
+# 2. (Option 2)
+# 3. (Option 3)
+# 4. (Option 4)
+#
+#
 question_prompt = """
 Please create one multiple-choice question related to the specified question and context.
 
-Make sure there is only one correct answer. Please don't provide obviously incorrect options.
+The question and options cannot be guessed using common sense.
+
+Three types of question are acceptable.
+1. Asking for the reason or background behind a chosen practice, decision, or situation.
+2. Asking for the best solution in a hypothetical organization's situation.
+3. Asking the meaning of technical terms.
+
+Make sure there is only one correct answer, and the answer is clearly written in the question or context.
 
 Don't reveal the answer.
 
-Feel free to create a question that asks for the best solution in a hypothetical organization's situation.
-
 Use the following examples as reference for the question format:
 
-    Question: (Situation example: Company A has decided to replace its authentication and authorization system as it scales up, which laws should they be concerned about?)
+    Question: SpaceX delayed the first launch attempt of Starship due to a technical issue. What might be a reason for this decision?
     Choose the correct answer from the options below:
-    1. (Option 1)
-    2. (Option 2)
-    3. (Option 3)
-    4. (Option 4)
+    1. To ensure the safety of the astronauts and Starship.
+    2. To engage in a publicity stunt.
+    3. To await approval from Martian authorities.
+    4. To create an opportunity for a joint launch with a competitor.
 
-    Question: (Specific topic example: Authentication) Choose the correct answer from the options below:
+    Question: City of Corcoran is experiencing flooding due to melting snow. What could be a reason behind the increased flooding in the city?
+    Choose the correct answer from the options below:
+    1. A slow, mild spring
+    2. A lack of proper drainage systems
+    3. Rapid urban development
+    4. A sudden heatwave
+
+    Question: Company A has decided to replace its authentication and authorization system as it scales up, which laws should they be concerned about?
+    Choose the correct answer from the options below:
     1. (Option 1)
     2. (Option 2)
     3. (Option 3)
@@ -109,10 +140,20 @@ class ExamQuestionGenerator():
         self.answer_chain = answer_chain
         self.keyword_generator = keyword_generator
 
+    def docs(self, source, number):
+        srcdoc = [Document(
+            page_content=self.vectorstore._collection.get()['documents'][number],
+            metadata=self.vectorstore._collection.get()['metadatas'][number] ,
+        )]
+        question = self.question_chain.run(input_documents=srcdoc, question="")
+        return {
+            "question": question,
+            "source": srcdoc,
+        }
+
     def source(self, sources):
         source = random.choice(sources)
         docs = self.vectorstore.similarity_search(".", k=self.vectorstore._collection.count(), filter={"source":source})
-        # srcdoc = [random.choice(docs), random.choice(docs), random.choice(docs)]
         srcdoc = [random.choice(docs)]
         question = self.question_chain.run(input_documents=srcdoc, question="")
         return {

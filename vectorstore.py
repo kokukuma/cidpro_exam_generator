@@ -16,8 +16,8 @@ def read_from_std(chunk_size=1000, chunk_overlap=500):
     # text_splitter = CharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap, separator="\n")
     text_splitter = CharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap, separator=".")
     documents = text_splitter.split_documents(documents)
-    if len(documents) < 4:
-        documents = documents * 4
+    # if len(documents) < 4:
+    #     documents = documents * 4
     return Chroma.from_documents(documents, embedding=OpenAIEmbeddings())
 
 def read_from_url(url, chunk_size=1000, chunk_overlap=500):

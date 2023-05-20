@@ -114,20 +114,20 @@ def get_source_files():
     return files
 
 
-def create_question_with_search(target, vectorstore, show_page_content=False):
+def create_question_with_search(target, vectorstore, show_page_content=False, doc_number=None):
     openai.api_key = os.getenv("OPENAI_API_KEY")
     llm = ChatOpenAI(temperature=1.0, model_name=os.getenv("GPT_MODEL"))
     eqg = ExamQuestionGenerator.from_llm(llm, vectorstore, chain_type="stuff")
 
+    # TODO: 整理する...
     if target.startswith("https://"):
         result = eqg.source([target])
-
     elif target.upper() in ["NIST", "ENISA", "NISTSP80063", "OAUTH", "OIDC", "BOK"]:
         result = eqg.source(SOURCES[target.upper()])
-
+    elif doc_number is not None:
+        result = eqg.docs(target, doc_number)
     elif target == "":
         result = eqg.random()
-
     else:
         result = eqg.keyword(target)
 
